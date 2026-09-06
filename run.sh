@@ -31,6 +31,8 @@ fi
 mkdir -p data
 export DBT_SEND_ANONYMOUS_USAGE_STATS=false
 export DUCKDB_PATH="$PWD/data/warehouse.duckdb"
+.venv/bin/python -m pytest tests/test_ingest.py -q
+.venv/bin/python ingest.py
 .venv/bin/dbt parse --project-dir dbt --profiles-dir dbt --no-partial-parse
 
-echo "Base environment and dbt configuration validated. Ingestion and models are not implemented yet."
+echo "Raw ingestion and base dbt configuration validated. dbt models are not implemented yet."
