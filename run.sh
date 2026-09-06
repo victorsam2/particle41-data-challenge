@@ -33,6 +33,26 @@ export DBT_SEND_ANONYMOUS_USAGE_STATS=false
 export DUCKDB_PATH="$PWD/data/warehouse.duckdb"
 .venv/bin/python -m pytest tests/test_ingest.py -q
 .venv/bin/python ingest.py
-.venv/bin/dbt parse --project-dir dbt --profiles-dir dbt --no-partial-parse
+.venv/bin/dbt run --project-dir dbt --profiles-dir dbt --no-partial-parse
+.venv/bin/dbt test --project-dir dbt --profiles-dir dbt
 
-echo "Raw ingestion and base dbt configuration validated. dbt models are not implemented yet."
+mkdir -p data/results
+for query_file in queries/*.sql; do
+    output_file="data/results/$(basename "${query_file%.sql}").csv"
+    .venv/bin/python -c '
+import csv
+import duckdb
+import pathlib
+import sys
+
+database_path, query_path, output_path = sys.argv[1:]
+connection = duckdb.connect(database_path, read_only=True)
+cursor = connection.execute(pathlib.Path(query_path).read_text(encoding="utf-8"))
+with open(output_path, "w", encoding="utf-8", newline="") as output_handle:
+    writer = csv.writer(output_handle)
+    writer.writerow([column[0] for column in cursor.description])
+    writer.writerows(cursor.fetchall())
+connection.close()
+' "$DUCKDB_PATH" "$query_file" "$output_file"
+    echo "Wrote $output_file"
+done

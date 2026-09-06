@@ -114,3 +114,62 @@ models:
           - accepted_values:
               arguments:
                 values: [true, false]
+
+  - name: mart_station_demand
+    description: "One starting station and rider segment over the loaded months, for comparing station demand."
+    columns:
+      - name: mart_key
+        description: "Deterministic key for the station and rider-segment grain."
+        tests:
+          - not_null
+          - unique
+      - name: station_key
+        description: "Starting station reference, including the reserved unknown station."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_station')
+                field: station_key
+      - name: member_casual
+        description: "Rider segment at the mart grain."
+        tests:
+          - not_null
+
+  - name: mart_usage_patterns
+    description: "One weekday, start hour, and rider segment over the loaded months, for comparing usage timing."
+    columns:
+      - name: mart_key
+        description: "Deterministic key for the weekday, hour, and rider-segment grain."
+        tests:
+          - not_null
+          - unique
+      - name: day_of_week
+        description: "DuckDB weekday number for the trip start date."
+        tests:
+          - not_null
+      - name: start_hour
+        description: "Hour of day extracted from the trip start timestamp."
+        tests:
+          - not_null
+      - name: member_casual
+        description: "Rider segment at the mart grain."
+        tests:
+          - not_null
+
+  - name: mart_bike_mix
+    description: "One bike type and rider segment over the loaded months, for comparing observed bike mix."
+    columns:
+      - name: mart_key
+        description: "Deterministic key for the bike-type and rider-segment grain."
+        tests:
+          - not_null
+          - unique
+      - name: rideable_type
+        description: "Bike type at the mart grain."
+        tests:
+          - not_null
+      - name: member_casual
+        description: "Rider segment at the mart grain."
+        tests:
+          - not_null
