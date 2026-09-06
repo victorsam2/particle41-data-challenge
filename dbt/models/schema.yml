@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: stg_trips
+    description: "One received trip row with source text cast to analytical types and blank text normalized to null."
+    columns:
+      - name: ride_id
+        description: "Trip identifier as supplied by Divvy after blank normalization."
+      - name: started_at
+        description: "Parsed trip start timestamp; null when the source value is not parseable."
+      - name: ended_at
+        description: "Parsed trip end timestamp; null when the source value is not parseable."
+      - name: source_month
+        description: "Selected YYYYMM source partition."
+      - name: source_file
+        description: "Cached ZIP filename that supplied the row."
+  - name: stg_stations
+    description: "One GBFS snapshot station object with selected JSON attributes extracted for later enrichment."
+    columns:
+      - name: station_json
+        description: "Complete GBFS station object preserved for source lineage."
+      - name: station_id
+        description: "GBFS station identifier, kept separate from historical trip station IDs."
+      - name: station_name
+        description: "Current GBFS station name used later for conservative matching."
+      - name: snapshot_updated_at
+        description: "Timestamp converted from the GBFS snapshot epoch metadata."

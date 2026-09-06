@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: "Faithful source tables rebuilt by the ingestion script."
+    tables:
+      - name: trips
+        description: "One received Divvy CSV row, including the selected source month and file."
+      - name: stations
+        description: "One complete station object from the cached GBFS snapshot."
