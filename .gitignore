@@ -1,0 +1,35 @@
+# Local planning and interview notes
+/PLAN.md
+/DECISIONS.md
+/AI_DECISION_LOG.md
+/local_notes_ptbr.md
+
+# Python environments and generated files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.cache/
+
+# Source downloads, warehouse, and query outputs
+/data/
+*.duckdb
+*.duckdb.wal
+*.part
+
+# dbt artifacts and local user settings
+target/
+logs/
+dbt_packages/
+.user.yml
+
+# Local editor, agent, and environment files
+.DS_Store
+.idea/
+.vscode/
+.agents/
+.codex/
+.superpowers/
+.env
+.env.*

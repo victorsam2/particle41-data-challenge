@@ -1,0 +1,7 @@
+name: particle41
+version: '1.0.0'
+config-version: 2
+profile: particle41
+
+model-paths: [models]
+test-paths: [tests]
