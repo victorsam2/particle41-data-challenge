@@ -1,9 +1,3 @@
-# Local planning and interview notes
-/PLAN.md
-/DECISIONS.md
-/AI_DECISION_LOG.md
-/local_notes_ptbr.md
-
 # Python environments and generated files
 .venv/
 venv/
@@ -24,12 +18,9 @@ logs/
 dbt_packages/
 .user.yml
 
-# Local editor, agent, and environment files
+# Local editor and environment files
 .DS_Store
 .idea/
 .vscode/
-.agents/
-.codex/
-.superpowers/
 .env
 .env.*
