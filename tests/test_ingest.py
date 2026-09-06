@@ -84,3 +84,8 @@ def test_extract_stations_preserves_nested_fields() -> None:
     }
 
     assert extract_stations({"data": {"stations": [station]}}) == [station]
+
+
+def test_extract_stations_rejects_a_missing_station_list() -> None:
+    with pytest.raises(ValueError, match="data.stations"):
+        extract_stations({"data": {}})

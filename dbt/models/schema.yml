@@ -21,6 +21,9 @@ models:
         description: "Complete GBFS station object preserved for source lineage."
       - name: station_id
         description: "GBFS station identifier, kept separate from historical trip station IDs."
+        tests:
+          - unique
+          - not_null
       - name: station_name
         description: "Current GBFS station name used later for conservative matching."
       - name: snapshot_updated_at
@@ -34,6 +37,13 @@ models:
         tests:
           - unique
           - not_null
+      - name: matching_status
+        description: "Result of conservative historical-name matching against the current GBFS snapshot."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['matched', 'unmatched', 'ambiguous', 'unknown']
 
   - name: dim_date
     description: "One calendar date observed in valid trip start or end timestamps."
@@ -52,6 +62,20 @@ models:
         tests:
           - unique
           - not_null
+      - name: rideable_type
+        description: "Bike type supplied by Divvy for the trip."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['classic_bike', 'electric_bike']
+      - name: member_casual
+        description: "Rider segment supplied by Divvy."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['member', 'casual']
       - name: start_station_key
         description: "Starting historical station identity, or unknown when the source ID is missing."
         tests:
@@ -83,3 +107,10 @@ models:
               arguments:
                 to: ref('dim_date')
                 field: date_key
+      - name: duration_is_valid
+        description: "Whether the original interval is positive and no longer than 24 hours."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
