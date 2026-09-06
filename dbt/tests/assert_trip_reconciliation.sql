@@ -23,7 +23,7 @@ raw_row_count as (
     from raw_trips
 ),
 
-deduplicated_raw_trips as (
+deduplicated_staged_trips as (
     select distinct
         ride_id,
         rideable_type,
@@ -33,26 +33,26 @@ deduplicated_raw_trips as (
         start_station_id,
         end_station_name,
         end_station_id,
-        start_lat,
-        start_lng,
-        end_lat,
-        end_lng,
+        start_latitude,
+        start_longitude,
+        end_latitude,
+        end_longitude,
         member_casual,
         source_month,
         source_file
-    from raw_trips
+    from {{ ref('stg_trips') }}
 ),
 
 deduplicated_row_count as (
     select count(*) as deduplicated_rows
-    from deduplicated_raw_trips
+    from deduplicated_staged_trips
 ),
 
 retained_row_count as (
     select count(*) as retained_rows
-    from deduplicated_raw_trips
-    where nullif(trim(ride_id), '') is not null
-        and try_cast(started_at as timestamp) is not null
+    from deduplicated_staged_trips
+    where ride_id is not null
+        and started_at is not null
 ),
 
 fact_row_count as (

@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from ingest import extract_stations, load_gbfs_json, parse_months, read_trip_rows
+from ingest import cache_trip_csv, extract_stations, load_gbfs_json, parse_months
 
 
 def test_parse_months_rejects_an_invalid_calendar_month() -> None:
@@ -25,7 +25,7 @@ def test_load_gbfs_json_rejects_invalid_json(tmp_path: Path) -> None:
         load_gbfs_json(snapshot_path)
 
 
-def test_read_trip_rows_rejects_missing_required_columns(tmp_path: Path) -> None:
+def test_cache_trip_csv_rejects_missing_required_columns(tmp_path: Path) -> None:
     archive_path = tmp_path / "202501-divvy-tripdata.zip"
     headers = [
         "ride_id",
@@ -47,10 +47,10 @@ def test_read_trip_rows_rejects_missing_required_columns(tmp_path: Path) -> None
             raw_file.write((",".join(headers) + "\n").encode("utf-8"))
 
     with pytest.raises(ValueError, match="end_lng"):
-        read_trip_rows(archive_path)
+        cache_trip_csv(archive_path, tmp_path / "extracted.csv")
 
 
-def test_read_trip_rows_ignores_macos_archive_metadata(tmp_path: Path) -> None:
+def test_cache_trip_csv_ignores_macos_archive_metadata(tmp_path: Path) -> None:
     archive_path = tmp_path / "202501-divvy-tripdata.zip"
     row = {column: "source value" for column in [
         "ride_id",
@@ -72,7 +72,11 @@ def test_read_trip_rows_ignores_macos_archive_metadata(tmp_path: Path) -> None:
         archive.writestr("202501-divvy-tripdata.csv", ",".join(row) + "\n" + ",".join(row.values()) + "\n")
         archive.writestr("__MACOSX/._202501-divvy-tripdata.csv", "metadata")
 
-    assert read_trip_rows(archive_path) == [row]
+    extracted_path = cache_trip_csv(archive_path, tmp_path / "extracted.csv")
+
+    assert extracted_path.read_text(encoding="utf-8") == (
+        ",".join(row) + "\n" + ",".join(row.values()) + "\n"
+    )
 
 
 def test_extract_stations_preserves_nested_fields() -> None:

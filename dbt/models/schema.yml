@@ -46,7 +46,7 @@ models:
                 values: ['matched', 'unmatched', 'ambiguous', 'unknown']
 
   - name: dim_date
-    description: "One calendar date observed in valid trip start or end timestamps."
+    description: "One calendar date in the continuous interval from the earliest to latest parseable trip event timestamp."
     columns:
       - name: date_key
         description: "Calendar date in YYYYMMDD integer form."
@@ -96,13 +96,6 @@ models:
         description: "Calendar date of the trip start timestamp."
         tests:
           - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_date')
-                field: date_key
-      - name: end_date_key
-        description: "Calendar date of the trip end timestamp when it is available."
-        tests:
           - relationships:
               arguments:
                 to: ref('dim_date')

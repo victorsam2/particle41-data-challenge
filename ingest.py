@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 import csv
-import io
 import json
 import os
 import re
 import shutil
 import sys
 import zipfile
-from collections.abc import Iterator, Mapping, Sequence
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -77,42 +76,6 @@ def load_gbfs_json(snapshot_path: Path) -> dict[str, Any]:
         raise ValueError(f"Invalid GBFS JSON at {snapshot_path}: root must be an object")
     extract_stations(payload)
     return payload
-
-
-def read_trip_rows(archive_path: Path) -> list[dict[str, str]]:
-    """Return source CSV rows after validating the ZIP and required header."""
-    return list(iter_trip_rows(archive_path))
-
-
-def iter_trip_rows(archive_path: Path) -> Iterator[dict[str, str]]:
-    """Yield source CSV rows without converting or filtering source values."""
-    try:
-        with zipfile.ZipFile(archive_path) as archive:
-            csv_names = [
-                name
-                for name in archive.namelist()
-                if name.lower().endswith(".csv")
-                and not name.startswith("__MACOSX/")
-                and not Path(name).name.startswith("._")
-            ]
-            if len(csv_names) != 1:
-                raise ValueError(
-                    f"Trip archive {archive_path} must contain exactly one CSV file"
-                )
-
-            with archive.open(csv_names[0]) as binary_file:
-                with io.TextIOWrapper(binary_file, encoding="utf-8-sig", newline="") as text_file:
-                    reader = csv.DictReader(text_file)
-                    actual_columns = reader.fieldnames or []
-                    missing_columns = [column for column in TRIP_COLUMNS if column not in actual_columns]
-                    if missing_columns:
-                        raise ValueError(
-                            f"Trip CSV {archive_path} is missing required columns: "
-                            f"{', '.join(missing_columns)}"
-                        )
-                    yield from reader
-    except zipfile.BadZipFile as error:
-        raise ValueError(f"Invalid trip ZIP cache at {archive_path}: {error}") from error
 
 
 def cache_trip_csv(archive_path: Path, extracted_path: Path) -> Path:

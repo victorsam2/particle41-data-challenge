@@ -36,7 +36,6 @@ select
     started_at,
     ended_at,
     cast(strftime(started_at, '%Y%m%d') as integer) as start_date_key,
-    cast(strftime(ended_at, '%Y%m%d') as integer) as end_date_key,
     case
         when start_station_id is null then 'unknown'
         else 'historical:' || start_station_id
